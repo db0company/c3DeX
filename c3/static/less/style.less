@@ -1,0 +1,92 @@
+/* Uncomment these lines when you need to compile LESS -> CSS */
+// @import "../../../env/lib/python2.7/site-packages/magi/static/less/main.less";
+// @import "../../../env/lib/python2.7/site-packages/magi/static/less/mixins/magicircles.less";
+
+/* Comment these lines when you need to compile LESS -> CSS */
+@import "main.less";
+@import "mixins/magicircles.less";
+
+@font-face {
+    font-family: '8-bit Pusab';
+    src: url("8-bit pusab.ttf");
+    font-weight: bold;
+    font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Dosis:200&display=swap');
+
+/******************************************/
+/* Variables */
+
+@mainColor: #E3350D;
+@secondaryColor: #424242;
+@accentColor: #FFFF00;
+
+/******************************************/
+/* Tools */
+
+/******************************************/
+/* MagiCircles */
+
+html {
+    .setup-sidebar(@mainColor);
+    .magicircles(@mainColor, @secondaryColor, @accentColor);
+}
+
+body {
+    font-family: 'Dosis', sans-serif;
+    font-size: 22px;
+}
+
+.btn-lg {
+    font-size: 26px;
+}
+
+.btn-xl {
+    font-size: 32px;
+}
+
+h1, h2, .title, .navbar-brand, .collection-table .table-headers-sections th, #filter-form-search-button button, .home-call-to-action {
+    font-family: '8-bit Pusab', monospace;
+    font-size: 17px;
+    .btn {
+        font-family: 'Dosis', sans-serif;
+    }
+}
+h1 {
+    font-size: 32px;
+}
+h2 {
+    font-size: 28px;
+}
+
+@import "generated_colors.less";
+
+/******************************************/
+/* Single pages */
+
+.homepage {
+    background-color: darken(@secondaryColor, 10%);
+    .home-site-description {
+        margin: auto;
+        padding: 20px;
+        line-height: 1.5em;
+        max-width: 850px;
+        color: fade(white, 90%);
+    }
+}
+
+/******************************************/
+/* MagiCollections */
+
+/* Activities */
+
+.current-activity_list[class*="shortcut-"], .current-index {
+    .homepage_navbar_colors(@mainColor, white, @accentColor, white, inherit, @mainColor);
+}
+
+/* Profile */
+
+#profiletabs li {
+    font-size: 1.2em;
+}
