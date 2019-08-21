@@ -1,10 +1,13 @@
+from collections import OrderedDict
+import time
 from django.conf import settings as django_settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from magi.abstract_models import BaseAccount, AccountAsOwnerModel
-from magi.models import uploadItem
+from magi.django_translated import t
 from magi.item_model import MagiModel, i_choices
+from magi.models import uploadItem
 from magi.utils import (
     AttrDict,
 )
@@ -12,6 +15,7 @@ from c3.utils import getCachedCCC
 from c3.c3_translations import ct
 
 TRANSLATION_LANGUAGES = [ l for l in django_settings.LANGUAGES if l[0] != 'en' ]
+TRANSLATION_LANGUAGES_EXCEPT_GERMAN = [ l for l in django_settings.LANGUAGES if l[0] not in ['de', 'en'] ]
 
 ############################################################
 # Account = attended CCC
@@ -84,8 +88,20 @@ class CCC(MagiModel):
     # Views utils
 
     @property
+    def year(self):
+        return self.start_date.year if self.start_date else None
+
+    @classmethod
+    def get_acronym(self, type, number, year):
+        if type == 'congress' and number:
+            return u'{}c3'.format(number)
+        elif type == 'camp' and year:
+            return u'camp{}'.format(year)
+        return None
+
+    @property
     def acronym(self):
-        return u'{}c3'.format(self.number) if self.number and self.type == 'congress' else None
+        return type(self).get_acronym(self.type, self.number, self.year)
 
     ############################################################
     # Unicode
@@ -128,14 +144,41 @@ class Talk(MagiModel):
     owner = models.ForeignKey(User, related_name='added_talk')
     ccc = models.ForeignKey('CCC', related_name='talks', verbose_name='CCC')
 
-    fahrplan_id = models.PositiveIntegerField(null=True)
+    fahrplan_guid = models.CharField('Fahrplan GUID', null=True, max_length=199)
 
     name = models.CharField(_('Title'), max_length=100)
+    NAMES_CHOICES = TRANSLATION_LANGUAGES
+    d_names = models.TextField(_('Title'), null=True)
 
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField(null=True)
+    subtitle = models.CharField(ct['Subtitle'], max_length=100, null=True)
+    SUBTITLES_CHOICES = TRANSLATION_LANGUAGES
+    d_subtitles = models.TextField(ct['Subtitle'], null=True)
+
+    description = models.TextField(_('Description'), null=True)
+    DESCRIPTIONS_CHOICES = TRANSLATION_LANGUAGES
+    d_descriptions = models.TextField(_('Description'), null=True)
+
+    length = models.PositiveIntegerField(_('Length'), null=True)
+    display_length = property(lambda _s: time.strftime(
+        '%H:%M:%S' if _s.length >= 3600 else '%M:%S', time.gmtime(_s.length)))
+
+    start_date = models.DateTimeField(_('Start date'))
+    end_date = models.DateTimeField(_('End date'), null=True)
 
     image = models.ImageField(_('Image'), upload_to=uploadItem('talk'), null=True)
+
+    url = models.URLField(_('About'), null=True)
+    watch_url = models.URLField(ct['Watch'], null=True)
+
+    LANGUAGE_CHOICES = OrderedDict([
+        ('eng', _('English')),
+        ('deu', _('German')),
+        ('other', _('Other')),
+    ])
+    i_language = models.PositiveIntegerField(t['Language'], default=0, choices=i_choices(LANGUAGE_CHOICES))
+
+    c_persons = models.TextField(ct['Persons'], null=True)
+    c_tags = models.TextField(_('Tags'), null=True)
 
     ############################################################
     # Views utils

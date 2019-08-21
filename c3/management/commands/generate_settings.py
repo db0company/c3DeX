@@ -35,6 +35,7 @@ def generate_settings():
             'name': unicode(ccc),
             't_names': getAllTranslations(lambda _language: ccc, unique=True),
             'image_url': ccc.image_url,
+            'acronym': ccc.acronym,
         }) for ccc in models.CCC.objects.all().order_by('-start_date')
     ])
 

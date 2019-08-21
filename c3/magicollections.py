@@ -6,6 +6,7 @@ from magi.magicollections import (
     SubItemCollection,
     AccountCollection as _AccountCollection,
     UserCollection as _UserCollection,
+    StaffConfigurationCollection as _StaffConfigurationCollection,
 )
 from magi.utils import (
     addParametersToURL,
@@ -14,6 +15,13 @@ from magi.utils import (
 )
 from c3.c3_translations import ct
 from c3 import models, forms
+
+############################################################
+# Enable collections
+############################################################
+
+class StaffConfigurationCollection(_StaffConfigurationCollection):
+    enabled = True
 
 ############################################################
 # User
@@ -150,6 +158,7 @@ class CCCCollection(MainItemCollection):
     class ListView(MainItemCollection.ListView):
         default_ordering = '-start_date'
         auto_filter_form = True
+        show_items_names = True
         item_buttons_classes = property(
             lambda _s: MainItemCollection.ListView.item_buttons_classes.fget(_s) + ['btn-lg'])
 
@@ -250,12 +259,30 @@ class TalkCollection(SubItemCollection):
     main_collection = 'ccc'
     title = ct['Talk']
     plural_title = ct['Talks']
+    navbar_link_list = None
+    icon = 'play'
 
     collectible = [
         models.AttendedTalk,
         models.WatchedTalk,
         models.WantToWatchTalk,
     ]
+
+    fields_icons = {
+        'ccc': 'event',
+        'fahrplan_guid': 'developer',
+        'name': 'about',
+        'subtitle': 'category',
+        'description': 'list',
+        'length': 'times',
+        'start_date': 'date',
+        'end_date': 'date',
+        'url': 'link',
+        'watch_url': 'play',
+        'language': 'translate',
+        'persons': 'voice-actress',
+        'tags': 'hashtag',
+    }
 
     def collectible_to_class(self, model_class):
         return {

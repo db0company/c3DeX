@@ -10,3 +10,13 @@ def getAttendedCCCsFromSession(request):
         request.session['attended_cccs'] = u','.join([
             str(pk) for pk in request.user.accounts.values_list('ccc_id', flat=True)])
     return [int(pk) for pk in request.session['attended_cccs'].split(',')]
+
+def getCCCHashtag(tags, acronym=None, id=None):
+    for tag in dict(tags).keys():
+        if not tag.startswith('ccc-'):
+            continue
+        if acronym and tag.split('-')[2] == acronym:
+            return tag
+        elif id and tab.split('-')[1] == unicode(id):
+            return tag
+    return None

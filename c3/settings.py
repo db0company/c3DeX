@@ -5,6 +5,7 @@ from magi.default_settings import (
     DEFAULT_ENABLED_NAVBAR_LISTS,
     DEFAULT_ENABLED_PAGES,
     DEFAULT_HOME_ACTIVITY_TABS,
+    DEFAULT_NAVBAR_ORDERING,
 )
 from magi.utils import (
     getTranslatedName,
@@ -44,6 +45,14 @@ It's:
     - Because we've all been there.
 - **Open source**
     - Of course!
+
+Features in include:
+- A customizable profile where you can keep track of the events you went to, your photos, comments and anectodes.
+- An activity feed where you can see what everyone is sharing.
+- Private messaging allowing you to meet new friends.
+- And more!
+
+I'm developing this project at CCCamp 2019 and plan to add features as suggestions come in.
 """
 
 GITHUB_REPOSITORY = ('db0company', 'c3DeX')
@@ -93,6 +102,13 @@ ENABLED_NAVBAR_LISTS['links'] = {
     ] + ['link_list'],
 }
 
+NAVBAR_ORDERING = [
+    'ccc_list',
+    'talk_list',
+    'question_list',
+    'links',
+] + DEFAULT_NAVBAR_ORDERING
+
 ENABLED_PAGES = DEFAULT_ENABLED_PAGES.copy()
 
 for link_id, link in django_settings.LINKS_IN_NAVBAR.items():
@@ -131,8 +147,12 @@ ACTIVITY_TAGS = [
     ('question', _('Question')),
     ('comedy', _('Comedy')),
     ('meme', _('MEME')),
+    ('anecdote', ct['Anecdotes']),
     ('questionable', _('Questionable')),
     ('nsfw', _('NSFW')),
+] + [
+    (u'ccc-{}-{}'.format(_ccc_id, _ccc['acronym']), _ccc['acronym'])
+    for _ccc_id, _ccc in django_settings.CCCS.items()
 ]
 
 ############################################################
