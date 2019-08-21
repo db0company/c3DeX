@@ -18,9 +18,9 @@ from c3 import models
 
 SITE_NAME = 'C3DeX'
 SITE_DESCRIPTION = 'Camp/Congress precious friends and memories personal tracker'
-SITE_URL = 'http://c3.db0.company/'
+SITE_URL = 'http://c3dex.db0.company/'
 SITE_IMAGE = 'c3.png'
-SITE_STATIC_URL = '//localhost:{}/'.format(django_settings.DEBUG_PORT) if django_settings.DEBUG else '//i.c3.db0.company/'
+SITE_STATIC_URL = '//localhost:{}/'.format(django_settings.DEBUG_PORT) if django_settings.DEBUG else '//i.c3dex.db0.company/'
 GAME_NAME = 'CCC'
 COMMENTS_ENGINE = 'commento'
 GOOGLE_ANALYTICS = None
