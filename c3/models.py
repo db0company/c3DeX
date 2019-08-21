@@ -54,7 +54,7 @@ class CCC(MagiModel):
     collection_name = 'ccc'
     owner = models.ForeignKey(User, related_name='added_ccc')
 
-    image = models.ImageField(ct['Logo'], upload_to=uploadItem('ccc'))
+    image = models.ImageField(ct['Logo'], upload_to=uploadItem('ccc'), max_length=500)
 
     TYPE_CHOICES = [
         ('congress', ct['Congress']),
@@ -165,7 +165,7 @@ class Talk(MagiModel):
     start_date = models.DateTimeField(_('Start date'))
     end_date = models.DateTimeField(_('End date'), null=True)
 
-    image = models.ImageField(_('Image'), upload_to=uploadItem('talk'), null=True)
+    image = models.ImageField(_('Image'), upload_to=uploadItem('talk'), null=True, max_length=500)
 
     url = models.URLField(_('About'), null=True)
     watch_url = models.URLField(ct['Watch'], null=True)
