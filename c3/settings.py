@@ -121,6 +121,8 @@ for link_id, link in django_settings.LINKS_IN_NAVBAR.items():
 ############################################################
 # Homepage
 
+REDIRECT_AFTER_SIGNUP = lambda _u: '/activity/3/Welcome-to-c3DeX-Thank-you-for-joining-What-are-the-next-steps-Tracking/'
+
 HOME_ACTIVITY_TABS = DEFAULT_HOME_ACTIVITY_TABS.copy()
 
 # Delete staff picks
