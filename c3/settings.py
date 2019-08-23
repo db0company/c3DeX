@@ -125,6 +125,8 @@ REDIRECT_AFTER_SIGNUP = lambda _u: '/activity/3/Welcome-to-c3DeX-Thank-you-for-j
 
 HOME_ACTIVITY_TABS = DEFAULT_HOME_ACTIVITY_TABS.copy()
 
+MINIMUM_LIKES_POPULAR = 0
+
 # Delete staff picks
 del(HOME_ACTIVITY_TABS['staffpicks'])
 
