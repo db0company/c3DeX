@@ -22,10 +22,13 @@ SITE_URL = 'http://c3dex.db0.company/'
 SITE_IMAGE = 'c3.png'
 SITE_STATIC_URL = '//localhost:{}/'.format(django_settings.DEBUG_PORT) if django_settings.DEBUG else '//i-c3dex.db0.company/'
 GAME_NAME = 'CCC'
-COMMENTS_ENGINE = 'commento'
+# COMMENTS_ENGINE = 'commento'
 GOOGLE_ANALYTICS = None
 ACCOUNT_MODEL = models.Account
+
 COLOR = '#E3350D'
+SECONDARY_COLOR = '#424242'
+ACCENT_COLOR = '#FFFF00'
 
 LAUNCH_DATE = datetime.datetime(2019, 8, 20, 12, 0, 0, tzinfo=pytz.UTC)
 

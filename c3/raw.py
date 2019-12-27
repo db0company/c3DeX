@@ -6,6 +6,7 @@ SCHEDULES = {
     2016: 'https://github.com/nexus511/33c3-fahrplan/raw/master/Fahrplan/schedule.json',
     2017: 'https://fahrplan.events.ccc.de/congress/2017/Fahrplan/schedule.json',
     2018: 'https://fahrplan.events.ccc.de/congress/2018/Fahrplan/schedule.json',
+    2019: 'https://fahrplan.events.ccc.de/congress/2019/Fahrplan/schedule.json',
 }
 
 CCCS = OrderedDict([
@@ -44,4 +45,5 @@ CCCS = OrderedDict([
     (2016, 'Works For Me'),
     (2017, 'tuwat'),
     (2018, 'Refreshing Memories'),
+    (2019, 'Resource Exhaustion'),
 ])

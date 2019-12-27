@@ -1,10 +1,10 @@
-/* Uncomment these lines when you need to compile LESS -> CSS */
-// @import "../../../env/lib/python2.7/site-packages/magi/static/less/main.less";
-// @import "../../../env/lib/python2.7/site-packages/magi/static/less/mixins/magicircles.less";
+/******************************************/
+/* Import */
 
-/* Comment these lines when you need to compile LESS -> CSS */
-@import "main.less";
-@import "mixins/magicircles.less";
+@import url('https://fonts.googleapis.com/css?family=Dosis:200&display=swap');
+
+/******************************************/
+/* Fonts */
 
 @font-face {
     font-family: '8-bit Pusab';
@@ -13,25 +13,11 @@
     font-style: normal;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Dosis:200&display=swap');
-
-/******************************************/
-/* Variables */
-
-@mainColor: #E3350D;
-@secondaryColor: #424242;
-@accentColor: #FFFF00;
-
 /******************************************/
 /* Tools */
 
 /******************************************/
 /* MagiCircles */
-
-html {
-    .setup-sidebar(@mainColor);
-    .magicircles(@mainColor, @secondaryColor, @accentColor);
-}
 
 body {
     font-family: 'Dosis', sans-serif;
@@ -59,8 +45,6 @@ h1 {
 h2 {
     font-size: 28px;
 }
-
-@import "generated_colors.less";
 
 /******************************************/
 /* Single pages */
