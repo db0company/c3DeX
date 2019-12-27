@@ -9,6 +9,11 @@ SCHEDULES = {
     2019: 'https://fahrplan.events.ccc.de/congress/2019/Fahrplan/schedule.json',
 }
 
+CAMP_SCHEDULES = {
+    2019: 'https://fahrplan.events.ccc.de/camp/2019/Fahrplan/schedule.json',
+    2015: 'https://fahrplan.events.ccc.de/camp/2015/Fahrplan/schedule.json',
+}
+
 CCCS = OrderedDict([
     (1984, 'CCC\'84 nach Orion\'64'),
     (1985, 'Du Darfst'),
