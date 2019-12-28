@@ -10,14 +10,18 @@ from c3.utils import (
     getCCCHashtag,
 )
 
-def importSchedule(local, log_function, verbose, year, ccc):
-    if year not in raw.SCHEDULES:
+def importSchedule(local, log_function, verbose, year, ccc, type='congress'):
+    if year not in (raw.SCHEDULES if type == 'congress' else raw.CAMP_SCHEDULES):
         return
+    print(ccc)
 
     def before_importing_schedule(result):
         ccc.start_date = result['schedule']['conference']['start']
         ccc.end_date = result['schedule']['conference']['end']
         ccc.save()
+        _ccc = models.CCC.objects.get(id=ccc.id)
+        ccc.start_date = _ccc.start_date
+        ccc.end_date = _ccc.end_date
         talks = []
         for day in result['schedule']['conference']['days']:
             for room_schedule in day['rooms'].values():
@@ -34,7 +38,7 @@ def importSchedule(local, log_function, verbose, year, ccc):
             )
 
     api_pages(
-        url=raw.SCHEDULES[year],
+        url=(raw.SCHEDULES if type == 'congress' else raw.CAMP_SCHEDULES)[year],
         name=u'talks-{}'.format(year),
         details={
             'callback_before_page': before_importing_schedule,
@@ -46,7 +50,7 @@ def importSchedule(local, log_function, verbose, year, ccc):
             'mapping': {
                 'guid': 'fahrplan_guid',
                 'date': lambda v: ('start_date', parse_datetime(v)),
-                'title': 'name',
+                'title': lambda v: ('name', v[100:]),
                 'logo': lambda v: (
                     'image',
                     u'https://fahrplan.events.ccc.de/congress/{}/Fahrplan{}'.format(year, v) if v else None,
@@ -55,7 +59,7 @@ def importSchedule(local, log_function, verbose, year, ccc):
             'ignored_fields': [
                 'subtitle', 'room', 'language', 'persons',
                 'track', 'type', 'abstract', 'attachments', 'slug',
-                'guid', 'do_not_record', 'start',
+                'do_not_record', 'start',
                 'recording_license', 'description', 'links',
                 # used in callback
                 'duration',
@@ -76,11 +80,16 @@ def importSchedule(local, log_function, verbose, year, ccc):
 
 def mediaAPICallbackAfterSavedCCC(local, log_function, verbose):
     def _lambda(details, item, json_item):
-        ccc = item
+        ccc = models.CCC.objects.get(id=item.id)
         def callbackAddMedia(details, item, unique_data, data):
             data['ccc_id'] = ccc.id
             if not data.get('start_date', None):
-                data['start_date'] = ccc.start_date
+                if item.get('release_date', None):
+                    data['start_date'] = item['release_date']
+                else:
+                    data['start_date'] = ccc['start_date']
+        if ccc.type == 'camp' and ccc.year in raw.CAMP_SCHEDULES:
+            importSchedule(local, log_function, verbose, ccc.year, ccc)
         api_pages(
             url=json_item['url'],
             name=u'media-talks-{}'.format(ccc.year),
@@ -92,12 +101,13 @@ def mediaAPICallbackAfterSavedCCC(local, log_function, verbose):
                     'fahrplan_guid',
                 ],
                 'fields': [
-                    'subtitle', 'description', 'length',
+                    'description', 'length',
                 ],
                 'mapping': {
                     'guid': 'fahrplan_guid',
+                    'subtitle': lambda v: ('subtitle', v[100:] if v else None),
                     'link': 'url',
-                    'title': 'name',
+                    'title': lambda v: ('name', v[100:]),
                     'original_language': 'i_language',
                     'persons': 'c_persons',
                     'tags': lambda v: ('c_tags', [_t for _t in [
@@ -145,6 +155,24 @@ def import_data(local=False, to_import=None, log_function=print, verbose=False):
                 importSchedule(local, log_function, verbose, year, ccc)
             number += 1
 
+    def findExistingCCC(model, unique_data, data, manytomany, dictionaries):
+        if unique_data['i_type'] == 1: # camp
+            year = unique_data['number']
+            unique_data['number'] = None
+            try:
+                item = model.objects.filter(i_type=1, start_date__year=year)[0]
+            except IndexError:
+                item = None
+        else:
+            # congress
+            try:
+                item = model.objects.filter(i_type=0, number=unique_data['number'])[0]
+            except IndexError:
+                item = None
+        if item and item.start_date and 'start_date' in data:
+           del(data['start_date'])
+        return item
+
     # Media API
     magi_import_data(
         url=raw.MEDIA_API_URL,
@@ -156,21 +184,21 @@ def import_data(local=False, to_import=None, log_function=print, verbose=False):
                 'callback_should_import': lambda _details, item: (
                     item['acronym'].endswith('c3') or item['acronym'].startswith('camp')),
                 'unique_fields': [
+                    'i_type',
                     'number',
-                    'year',
                 ],
-                'unique_together': True,
+                'find_existing_item': findExistingCCC,
                 'mapping': {
                     'acronym': lambda value: {
-                        'number': int(value[:-2]) if value.endswith('c3') else None,
+                        'number': int(value[:-2]) if value.endswith('c3') else int(value[4:]),
                         'i_type': 'congress' if value.endswith('c3') else 'camp',
                     },
                     'logo_url': 'image',
+                    'event_last_released_at': 'start_date',
                 },
                 'ignored_fields': [
                     'aspect_ratio', 'updated_at', 'title', 'slug',
-                    'event_last_released_at', 'webgen_location',
-                    'schedule_url',
+                    'webgen_location', 'schedule_url',
                 ],
                 'callback_after_save': mediaAPICallbackAfterSavedCCC(local, log_function, verbose),
             },
