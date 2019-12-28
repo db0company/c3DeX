@@ -79,6 +79,8 @@ def mediaAPICallbackAfterSavedCCC(local, log_function, verbose):
         ccc = item
         def callbackAddMedia(details, item, unique_data, data):
             data['ccc_id'] = ccc.id
+            if not data.get('start_date', None):
+                data['start_date'] = ccc.start_date
         api_pages(
             url=json_item['url'],
             name=u'media-talks-{}'.format(ccc.year),
@@ -142,6 +144,7 @@ def import_data(local=False, to_import=None, log_function=print, verbose=False):
             if not to_import or 'schedule' in to_import:
                 importSchedule(local, log_function, verbose, year, ccc)
             number += 1
+
     # Media API
     magi_import_data(
         url=raw.MEDIA_API_URL,
